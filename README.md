@@ -1,10 +1,10 @@
 # TutorMe
 
-TutorMe is a collection of AI tutoring strategies based on findings from
-education research. In this assignment, you will turn one strategy template
-into a clear set of instructions that an AI coding agent can follow.
+TutorMe is a collection of AI tutoring strategies based on findings from education research. In this assignment, you will turn one strategy template into a clear set of instructions that an AI coding agent can follow to help students learn.
 
-![TutorMe tutoring session](images/tutorme.png)
+<p align="center">
+  <img src="images/tutorme.png" alt="TutorMe tutoring session" width="600">
+</p>
 
 ## Your assignment
 
