@@ -19,13 +19,13 @@ You should already have been assigned a tutoring strategy from education to work
 
 @Hope add instructions
 
-### 1. Add class materials
+### 2. Add class materials
 
 Add some class materials to the `/materials` folder, such as lecture notes, a reading, a study guide, or a transcript.
 
 @Zoey add more details and what other examples are
 
-### 2. Implement your assigned strategy
+### 3. Implement your assigned strategy
 
 A skill file is a text document that tells an AI agent when and how to perform a specific task. The section at the top gives the skill its name and description, while the rest of the file defines the questions to ask, the workflow to follow, the output to create, and the criteria for success.
 
@@ -62,7 +62,7 @@ Then, convert the tutoring strategy into instructions under Strategy Workflow ex
 
 We have a completely filled out example under `mnemonics` that you can follow!
 
-### 3. Test your skill file
+### 4. Test your skill file
 
 To test your skill file, call its name (for example, `/mnemonics`):
 
