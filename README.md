@@ -15,6 +15,9 @@ You should already have been assigned a tutoring strategy from education to work
 3. Test the strategy with a coding agent and improve it based on what happens.
 4. Add your name to the contributor list
 
+### 1. Set up your repository and coding agent
+
+@Hope add instructions
 
 ### 1. Add class materials
 
