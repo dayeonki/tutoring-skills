@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mnemonics — PY4E Chapter 2: Variables</title>
+  <style>
+    :root {
+      --bg: #f7f4ec;
+      --card: #ffffff;
+      --ink: #2b2622;
+      --muted: #6d635a;
+      --line: #ddd4c4;
+      --accent: #6f7d49;
+      --accent-soft: #e7edd4;
+      --warn: #8a5a2b;
+      --warn-soft: #f3e6d4;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--ink);
+      background: linear-gradient(180deg, #f0ead2 0%, var(--bg) 40%, #f8f6f0 100%);
+      min-height: 100vh;
+      line-height: 1.45;
+    }
+    header, main { max-width: 920px; margin: 0 auto; padding: 1.25rem; }
+    header {
+      padding-top: 2rem;
+    }
+    h1 { margin: 0 0 0.35rem; font-size: 1.7rem; }
+    .meta { color: var(--muted); font-size: 0.95rem; }
+    .note {
+      margin-top: 1rem;
+      padding: 0.85rem 1rem;
+      background: var(--warn-soft);
+      border: 1px solid #e2c9a8;
+      border-radius: 10px;
+      color: var(--warn);
+      font-size: 0.95rem;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 1rem;
+      align-items: start;
+    }
+    @media (max-width: 760px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 1rem;
+      box-shadow: 0 8px 24px rgba(43, 38, 34, 0.05);
+    }
+    .targets { display: grid; gap: 0.5rem; }
+    .target-btn {
+      text-align: left;
+      width: 100%;
+      border: 1px solid var(--line);
+      background: #faf8f2;
+      border-radius: 10px;
+      padding: 0.7rem 0.8rem;
+      cursor: pointer;
+      font: inherit;
+      color: inherit;
+    }
+    .target-btn:hover, .target-btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 1px;
+    }
+    .target-btn.active {
+      background: var(--accent-soft);
+      border-color: #b7c48a;
+      font-weight: 700;
+    }
+    .target-btn .fav-mark {
+      float: right;
+      color: var(--accent);
+    }
+    .badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      padding: 0.15rem 0.45rem;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: #44512a;
+      margin-bottom: 0.5rem;
+    }
+    h2 { margin: 0.2rem 0 0.75rem; font-size: 1.35rem; }
+    .fact, .device {
+      padding: 0.85rem 1rem;
+      border-radius: 10px;
+      margin-bottom: 0.85rem;
+    }
+    .fact {
+      background: #f3f1ea;
+      border: 1px solid var(--line);
+    }
+    .device {
+      background: #fff;
+      border: 1px dashed #c9bfae;
+    }
+    .device strong { color: #44512a; }
+    .candidates { display: grid; gap: 0.75rem; }
+    .candidate {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 0.9rem 1rem;
+      background: #fffcf7;
+    }
+    .candidate.favorite {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+    button.control {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 999px;
+      padding: 0.45rem 0.85rem;
+      cursor: pointer;
+      font: inherit;
+      font-size: 0.92rem;
+    }
+    button.control:hover, button.control:focus-visible {
+      border-color: var(--accent);
+      outline: 2px solid var(--accent-soft);
+    }
+    button.control.primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+    .mapping {
+      margin-top: 0.65rem;
+      padding-top: 0.65rem;
+      border-top: 1px dashed var(--line);
+      color: var(--muted);
+      font-size: 0.95rem;
+      display: none;
+    }
+    .mapping.show { display: block; }
+    .recall {
+      margin-top: 1.25rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--line);
+    }
+    .answer-box {
+      width: 100%;
+      min-height: 70px;
+      margin-top: 0.5rem;
+      padding: 0.7rem;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      font: inherit;
+      resize: vertical;
+    }
+    .feedback {
+      margin-top: 0.65rem;
+      padding: 0.75rem 0.9rem;
+      border-radius: 10px;
+      display: none;
+    }
+    .feedback.show { display: block; }
+    .feedback.ok { background: var(--accent-soft); border: 1px solid #b7c48a; }
+    .feedback.reveal { background: #eef2f7; border: 1px solid #c9d3e0; }
+    footer {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 0 1.25rem 2rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Mnemonics Workspace</h1>
+    <p class="meta">
+      Source: <code>materials/reference/ch2_variables.pdf</code>
+      (Python for Everybody, Chapter 2 — Creative Commons Attribution 4.0)
+    </p>
+    <p class="note">
+      Labels like “memory device” are added associations to help recall.
+      They are <strong>not</strong> claims from the textbook.
+    </p>
+  </header>
+
+  <main class="layout">
+    <aside class="panel">
+      <h2 style="font-size:1.05rem; margin-bottom:0.75rem;">Memory targets</h2>
+      <div id="targetList" class="targets" role="list"></div>
+      <div class="actions" style="margin-top:1rem;">
+        <button class="control" id="resetBtn" type="button">Reset favorites &amp; progress</button>
+      </div>
+    </aside>
+
+    <section class="panel" aria-live="polite">
+      <div id="detail"></div>
+    </section>
+  </main>
+
+  <footer>
+    Smoke test for the <code>mnemonics</code> skill. Open this file in a browser, pick a favorite candidate, hide/show mappings, and try the recall check.
+  </footer>
+
+  <script>
+    const STORAGE_KEY = "tutorme-mnemonics-ch2-v1";
+
+    const targets = [
+      {
+        id: "types",
+        title: "int / float / str",
+        fact: "Source fact: whole numbers are int, decimals are float, text in quotes is str. Values in quotes like '17' are still strings.",
+        candidates: [
+          {
+            id: "types-a",
+            label: "Imagery",
+            text: "Imagine three bins: a solid brick (int), a splashy water balloon (float), and a beaded necklace of letters (str).",
+            mapping: "Brick = whole/no fraction → int. Water balloon = number with a ‘pointy splash’ → float. Beaded necklace = string of characters → str."
+          },
+          {
+            id: "types-b",
+            label: "Keyword link",
+            text: "INT = Intact whole; FLOAT = Floating decimal; STR = String of letters.",
+            mapping: "Intact → no decimal part. Floating → decimal point. String → characters linked together."
+          },
+          {
+            id: "types-c",
+            label: "Story",
+            text: "At a fair, Intact tickets (int) get you in, Floating soda cups (float) tip with decimals, and String balloons (str) spell messages in quotes.",
+            mapping: "Tickets/cups/balloons map to int/float/str; quotes around the message remind you quoted numbers stay str."
+          }
+        ],
+        recallPrompt: "Name the Python types for: 17, 3.2, and '17'.",
+        recallAnswer: "17 → int; 3.2 → float; '17' → str (because of the quotes)."
+      },
+      {
+        id: "variable",
+        title: "Variable + assignment",
+        fact: "Source fact: a variable is a name that refers to a value. An assignment statement creates a variable and gives it a value (for example, n = 17).",
+        candidates: [
+          {
+            id: "var-a",
+            label: "Imagery",
+            text: "A sticky nametag (variable name) slapped onto a gift box (value).",
+            mapping: "Nametag = variable name; gift box = value; sticking the tag on = assignment."
+          },
+          {
+            id: "var-b",
+            label: "Keyword link",
+            text: "ASSIGN = A Sticky Signboard Naming something.",
+            mapping: "Sticky signboard = the name; naming something = making the name refer to a value."
+          },
+          {
+            id: "var-c",
+            label: "Story",
+            text: "You write ‘pi’ on a jar lid and pour in 3.14159. Later, asking for the jar labeled pi gives that value.",
+            mapping: "Jar label = variable; poured contents = value; writing the label = assignment statement."
+          }
+        ],
+        recallPrompt: "In one sentence, what is a variable, and what does assignment do?",
+        recallAnswer: "A variable is a name that refers to a value; assignment creates that name-to-value link."
+      },
+      {
+        id: "pemdas",
+        title: "Order of operations (PEMDAS)",
+        fact: "Source fact: Python follows PEMDAS — Parentheses, Exponentiation, Multiplication/Division, Addition/Subtraction; same-precedence operators go left to right.",
+        candidates: [
+          {
+            id: "pemdas-a",
+            label: "Acronym",
+            text: "Please Excuse My Dear Aunt Sally → Parentheses, Exponents, Multiply/Divide, Add/Subtract.",
+            mapping: "Each word’s first letter maps to the precedence level named in the chapter."
+          },
+          {
+            id: "pemdas-b",
+            label: "Story",
+            text: "First, people in (parentheses) shout; then fireworks (**) explode; then mixers (* /) spin; finally adders (+ -) stroll left to right.",
+            mapping: "Order of scenes = evaluation order; left-to-right stroll = same-precedence rule."
+          },
+          {
+            id: "pemdas-c",
+            label: "Spatial",
+            text: "In a hallway: door () first, ladder ** next, carts * / after that, then + - benches at the end.",
+            mapping: "Walking the hallway top-priority to lowest maps to PEMDAS order."
+          }
+        ],
+        recallPrompt: "What does PEMDAS stand for in Python’s evaluation order?",
+        recallAnswer: "Parentheses, Exponentiation, Multiplication/Division, Addition/Subtraction (left to right within the same level)."
+      },
+      {
+        id: "divmod",
+        title: "/ vs // vs %",
+        fact: "Source fact: / does true division (float in Python 3), // is floored integer division, and % (modulus) yields the remainder.",
+        candidates: [
+          {
+            id: "div-a",
+            label: "Imagery",
+            text: "/ is a smoothie blender (keeps fractions). // is a cookie cutter (cuts to whole cookies). % is leftover crumbs on the plate.",
+            mapping: "Smoothie → float result; cutter → floor division; crumbs → remainder."
+          },
+          {
+            id: "div-b",
+            label: "Keyword link",
+            text: "SLASH floats; DOUBLE-SLASH floors; PERCENT is the leftover piece.",
+            mapping: "One slash → /; double → //; percent sign → % remainder."
+          },
+          {
+            id: "div-c",
+            label: "Mini story",
+            text: "7 pizza slices for 3 people: // says 2 each, % says 1 lonely slice remains.",
+            mapping: "7 // 3 = 2; 7 % 3 = 1, matching the chapter example."
+          }
+        ],
+        recallPrompt: "For 7 and 3, what are 7/3 (Python 3), 7//3, and 7%3?",
+        recallAnswer: "7/3 ≈ 2.333… (float); 7//3 = 2; 7%3 = 1."
+      },
+      {
+        id: "keywords",
+        title: "Keywords are reserved",
+        fact: "Source fact: Python keywords (like class, for, if) are reserved for the language structure and cannot be used as variable names.",
+        candidates: [
+          {
+            id: "key-a",
+            label: "Imagery",
+            text: "Keywords are VIP velvet-rope words: only Python staff can stand behind them; your variables wait outside.",
+            mapping: "VIP rope = reserved status; outside = legal variable names you choose."
+          },
+          {
+            id: "key-b",
+            label: "Story",
+            text: "Trying to name a backpack ‘class’ gets a SyntaxError bounce from the school hallway monitor.",
+            mapping: "‘class’ is a keyword example from the chapter; bounce = syntax error."
+          },
+          {
+            id: "key-c",
+            label: "Keyword link",
+            text: "KEYWORD = Keep Every Your Own Word Elsewhere, Dude.",
+            mapping: "Keep your names elsewhere = don’t reuse reserved words as variables."
+          }
+        ],
+        recallPrompt: "Why is class = 'Advanced Theoretical Zymurgy' illegal?",
+        recallAnswer: "Because class is a Python keyword and cannot be used as a variable name."
+      },
+      {
+        id: "strings",
+        title: "String + and *",
+        fact: "Source fact: + concatenates strings end to end; * repeats a string an integer number of times.",
+        candidates: [
+          {
+            id: "str-a",
+            label: "Imagery",
+            text: "+ is a train coupler linking cars (‘100’+‘150’ → ‘100150’). * is a copy machine (‘Test ’ * 3).",
+            mapping: "Coupler = concatenation; copy machine = repetition by an integer."
+          },
+          {
+            id: "str-b",
+            label: "Story",
+            text: "Glue two name tags with +; stamp the same tag three times with *.",
+            mapping: "Glue → + join; stamp count → * repetition."
+          },
+          {
+            id: "str-c",
+            label: "Contrast cue",
+            text: "Numbers add; strings stick. Numbers multiply; strings echo.",
+            mapping: "Contrasts numeric +/* with string concatenation/repetition from the chapter."
+          }
+        ],
+        recallPrompt: "What do '100'+'150' and 'Test '*3 produce?",
+        recallAnswer: "'100150' and 'Test Test Test'."
+      },
+      {
+        id: "input",
+        title: "input() returns a string",
+        fact: "Source fact: input() pauses for keyboard entry and always returns what the user typed as a string; convert with int() when you need an integer.",
+        candidates: [
+          {
+            id: "inp-a",
+            label: "Imagery",
+            text: "A receptionist (input) always hands you a paper note (string), even if you typed digits. A stamp machine (int()) turns digit-notes into number coins.",
+            mapping: "Receptionist = input(); paper note = str return; stamp = int() conversion."
+          },
+          {
+            id: "inp-b",
+            label: "Story",
+            text: "You ask for airspeed 17; input gives the text '17'. int(speed) mints it into the integer 17.",
+            mapping: "Matches the chapter’s swallow airspeed example and ValueError if text isn’t digits."
+          },
+          {
+            id: "inp-c",
+            label: "Keyword link",
+            text: "INPUT = Ink Note Presented Until Transformed.",
+            mapping: "Ink note = string; transformed = optional int()/float() conversion."
+          }
+        ],
+        recallPrompt: "What type does input() return, and how do you get an integer from digit input?",
+        recallAnswer: "It returns a str; use int(...) on the returned text when it contains digits."
+      }
+    ];
+
+    function loadState() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || { favorites: {}, recalls: {} };
+      } catch {
+        return { favorites: {}, recalls: {} };
+      }
+    }
+
+    function saveState(state) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch {}
+    }
+
+    let state = loadState();
+    let activeId = targets[0].id;
+    let mappingVisible = {};
+
+    const targetList = document.getElementById("targetList");
+    const detail = document.getElementById("detail");
+
+    function renderList() {
+      targetList.innerHTML = "";
+      targets.forEach((t) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "target-btn" + (t.id === activeId ? " active" : "");
+        btn.setAttribute("role", "listitem");
+        btn.innerHTML = `${t.title}${state.favorites[t.id] ? '<span class="fav-mark" aria-label="favorite selected">★</span>' : ""}`;
+        btn.addEventListener("click", () => {
+          activeId = t.id;
+          render();
+        });
+        targetList.appendChild(btn);
+      });
+    }
+
+    function renderDetail() {
+      const t = targets.find((x) => x.id === activeId);
+      const fav = state.favorites[t.id];
+      detail.innerHTML = `
+        <div class="badge">Memory target</div>
+        <h2>${t.title}</h2>
+        <div class="fact"><strong>Source fact:</strong> ${t.fact.replace(/^Source fact:\s*/, "")}</div>
+        <div class="device"><strong>Memory devices</strong> (added associations — not textbook claims)</div>
+        <div class="candidates">
+          ${t.candidates.map((c) => `
+            <article class="candidate${fav === c.id ? " favorite" : ""}" data-cid="${c.id}">
+              <div class="badge">${c.label}</div>
+              <div>${c.text}</div>
+              <div class="mapping${mappingVisible[c.id] ? " show" : ""}" id="map-${c.id}">
+                <strong>Mapping:</strong> ${c.mapping}
+              </div>
+              <div class="actions">
+                <button class="control" type="button" data-action="toggle-map" data-cid="${c.id}">
+                  ${mappingVisible[c.id] ? "Hide mapping" : "Reveal mapping"}
+                </button>
+                <button class="control primary" type="button" data-action="favorite" data-cid="${c.id}">
+                  ${fav === c.id ? "Favorited ★" : "Mark favorite"}
+                </button>
+              </div>
+            </article>
+          `).join("")}
+        </div>
+        <div class="recall">
+          <h2 style="font-size:1.15rem;">Recall check</h2>
+          <p>${t.recallPrompt}</p>
+          <label for="answer" class="meta">Type your answer before revealing</label>
+          <textarea id="answer" class="answer-box" placeholder="Attempt from memory...">${state.recalls[t.id]?.attempt || ""}</textarea>
+          <div class="actions">
+            <button class="control primary" type="button" id="checkBtn">Check my attempt</button>
+            <button class="control" type="button" id="revealBtn">Reveal answer</button>
+          </div>
+          <div id="feedback" class="feedback"></div>
+        </div>
+      `;
+
+      detail.querySelectorAll("[data-action='toggle-map']").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const cid = btn.getAttribute("data-cid");
+          mappingVisible[cid] = !mappingVisible[cid];
+          renderDetail();
+          renderList();
+        });
+      });
+
+      detail.querySelectorAll("[data-action='favorite']").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          state.favorites[t.id] = btn.getAttribute("data-cid");
+          saveState(state);
+          render();
+        });
+      });
+
+      const feedback = detail.querySelector("#feedback");
+      const answer = detail.querySelector("#answer");
+
+      detail.querySelector("#checkBtn").addEventListener("click", () => {
+        const attempt = answer.value.trim();
+        state.recalls[t.id] = { ...(state.recalls[t.id] || {}), attempt, checked: true };
+        saveState(state);
+        feedback.className = "feedback show ok";
+        feedback.innerHTML = attempt
+          ? `<strong>Nice attempt.</strong> Compare it with the source answer using “Reveal answer”. Preferred favorite: ${fav ? t.candidates.find(c => c.id === fav).label : "not chosen yet"}.`
+          : `Try writing something from memory first, then check again.`;
+      });
+
+      detail.querySelector("#revealBtn").addEventListener("click", () => {
+        state.recalls[t.id] = { ...(state.recalls[t.id] || {}), revealed: true, attempt: answer.value };
+        saveState(state);
+        feedback.className = "feedback show reveal";
+        feedback.innerHTML = `<strong>Source-based answer:</strong> ${t.recallAnswer}`;
+      });
+
+      if (state.recalls[t.id]?.revealed) {
+        feedback.className = "feedback show reveal";
+        feedback.innerHTML = `<strong>Source-based answer:</strong> ${t.recallAnswer}`;
+      } else if (state.recalls[t.id]?.checked) {
+        feedback.className = "feedback show ok";
+        feedback.innerHTML = `<strong>Attempt saved.</strong> Use “Reveal answer” when ready to compare.`;
+      }
+    }
+
+    function render() {
+      renderList();
+      renderDetail();
+    }
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      state = { favorites: {}, recalls: {} };
+      mappingVisible = {};
+      saveState(state);
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>
